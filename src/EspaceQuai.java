@@ -37,7 +37,7 @@ public class EspaceQuai {
 	synchronized public void faireQueue(Voyageur voyageur){
 		while (true){
 			for (Train train: trains){
-				if (!train.estPlein()){
+				if (train.getId() == voyageur.getBillet().getTrain().getId()){
 					train.ajoutVoyageur(voyageur);
 					gare.removeVoyageur();
 					notifyAll();

@@ -2,7 +2,7 @@
 public class Voyageur extends Thread {
 
 	private Integer id;
-	private boolean billet = false;
+	private Billet billet;
 	private Gare gare;
 	
 	public Voyageur(Integer id, Gare gare){
@@ -10,12 +10,12 @@ public class Voyageur extends Thread {
 		this.gare = gare;
 	}
 	
-	public boolean isBillet() {
+	public Billet getBillet() {
 		return billet;
 	}
 
-	public void setBillet() {
-		this.billet = true;
+	public void setBillet(Billet billet) {
+		this.billet = billet;
 	}
 	
 	public void run() {

@@ -54,7 +54,7 @@ public class Train extends Thread{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		quai.sortirQuai(this);	
+		quai.sortirQuai(this);
 	}
 	
 	public long getId() {
