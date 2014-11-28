@@ -5,9 +5,14 @@ public class Voyageur extends Thread {
 	private Billet billet;
 	private Gare gare;
 	
-	public Voyageur(Integer id, Gare gare){
+	public Voyageur(ThreadGroup group, Integer id, Gare gare){
+		super(group, id.toString());
 		this.id = id;
 		this.gare = gare;
+	}
+	
+	public long getId() {
+		return id;
 	}
 	
 	public Billet getBillet() {
@@ -20,12 +25,17 @@ public class Voyageur extends Thread {
 	
 	public void run() {
 		EspaceVente vente = gare.getEspaceVente();
-		vente.acheterBillet(this);
+		try {
+			vente.acheterBillet(this);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		EspaceQuai quai = gare.getQuai();
-		quai.faireQueue(this);
-	}
-	public long getId() {
-		return id;
+		try {
+			quai.faireQueue(this);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -25,6 +25,7 @@ public class EspaceQuai {
 		}
 		System.out.println(">Train " + train.getId() + " entre en gare avec " + train.nbPlaces() + " places dispo. Attente prévue : " + train.getAttente());
 		trains.add(train);
+		notifyAll();
 	}
 
 	synchronized public void sortirQuai(Train train){
@@ -34,20 +35,16 @@ public class EspaceQuai {
 		notifyAll();
 	}
 	
-	synchronized public void faireQueue(Voyageur voyageur){
-		while (true){
+	synchronized public void faireQueue(Voyageur voyageur) throws InterruptedException{
+		while (true) {
 			for (Train train: trains){
 				if (train.getId() == voyageur.getBillet().getTrain().getId()){
-					train.ajoutVoyageur(voyageur);
-					gare.removeVoyageur();
+					train.faireQueue(voyageur);
 					notifyAll();
 					return;
+				} else {
+					wait();
 				}
-			}
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 	}
