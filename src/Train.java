@@ -5,18 +5,21 @@ import java.util.ArrayList;
 public class Train extends Thread {
 
 	private Integer id;
-	private Gare gare;
-	private Integer CAPACITE_TRAIN = 8;
+	Log logger;
+	private Integer CAPACITE_TRAIN = 10;
 	private Integer NB_PLACES = (int) (Math.random()*(CAPACITE_TRAIN-0));
 	private Integer VITESSE_TRAIN = (int) (Math.random()*(300-50))+50;
 	private Integer ARRET_TRAIN = (int) (Math.random()*(30000-3000))+3000;
 	private ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();
+	EspaceQuai quai;
+	EspaceVente vente;
 
 	
-	public Train(ThreadGroup group, Integer id, Gare gare){
-		super(group, id.toString());
+	public Train(Integer id, Gare gare){
 		this.id = id;
-		this.gare = gare;
+		quai = gare.getQuai();
+		vente = gare.getEspaceVente();
+		logger = new Log(this);
 	}
 	
 	public long getId() {
@@ -24,7 +27,7 @@ public class Train extends Thread {
 	}
 	
 	public int getAttente() {
-		return ARRET_TRAIN;
+		return ARRET_TRAIN / 1000;
 	}
 	
 	public boolean estPlein() {
@@ -32,16 +35,15 @@ public class Train extends Thread {
 	}
 	
 	synchronized public void ajoutVoyageur(Voyageur voyageur){
-		System.out.println(" >Train " + this.id + " prend le voyageur " + voyageur.getId());
 		voyageurs.add(voyageur);
 	}
 	
 	synchronized public Integer nbVoyageurs(){
-		return (CAPACITE_TRAIN - NB_PLACES) + voyageurs.size();
+		return voyageurs.size();
 	} 
 	
 	synchronized public Integer nbPlaces(){
-		return NB_PLACES - voyageurs.size();
+		return NB_PLACES;
 	}
 	
 	public void run() {
@@ -50,25 +52,24 @@ public class Train extends Thread {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		EspaceQuai quai = gare.getQuai();
-		EspaceVente vente = gare.getEspaceVente();
 		quai.entrerQuai(this);
-		vente.declarerTrain(this);
 		try {
 			Thread.sleep(ARRET_TRAIN);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		while (!estPlein()) {
-		}
-
+		vente.retirerTrain(this);
 		quai.sortirQuai(this);
 	}
 
-	synchronized public void faireQueue(Voyageur voyageur) {
+	public void faireQueue(Voyageur voyageur) {
 		ajoutVoyageur(voyageur);
-		gare.removeVoyageur();
+		quai.removeVoyageur();
 		
+	}
+	
+	public String toString() {
+		return quai.toString() + "::Train(" + id + ")"; 
 	}
 
 }

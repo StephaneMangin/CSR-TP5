@@ -3,12 +3,15 @@ import java.util.ArrayList;
 
 public class EspaceQuai {
 
+	Log logger;
 	private Gare gare;
 	private Integer NB_VOIES = 3;
 	private ArrayList<Train> trains = new ArrayList<Train>();
 	
 	public EspaceQuai(Gare gare) {
 		this.gare = gare;
+		
+		logger = new Log(this);
 	}
 	
 	synchronized public int getNbVoiesLibres() {
@@ -23,30 +26,41 @@ public class EspaceQuai {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(">Train " + train.getId() + " entre en gare avec " + train.nbPlaces() + " places dispo. Attente prévue : " + train.getAttente());
+		train.logger.info("entré en gare pour " + train.getAttente() + " secondes ...");
 		trains.add(train);
-		notifyAll();
+		gare.getEspaceVente().declarerTrain(train);
 	}
 
 	synchronized public void sortirQuai(Train train){
+		train.logger.info("quitte la gare avec " + train.nbVoyageurs() + " voyageur(s).");
 		trains.remove(train);
-		System.out.println("<Train " + train.getId() + " quitte la gare avec " + train.nbPlaces() + " places dispo.");
-		System.out.println("Voyageurs restant: " + gare.getVoyageurs_restants());
 		notifyAll();
 	}
 	
-	synchronized public void faireQueue(Voyageur voyageur) throws InterruptedException{
+	synchronized public void faireQueue(Voyageur voyageur) {
 		while (true) {
 			for (Train train: trains){
 				if (train.getId() == voyageur.getBillet().getTrain().getId()){
 					train.faireQueue(voyageur);
+					train.logger.fine(voyageur.toString() + " est entré.");
 					notifyAll();
 					return;
-				} else {
-					wait();
 				}
+			}
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 	
+	public String toString() {
+		return gare.toString() + "::EspaceQuai";
+	}
+
+	public void removeVoyageur() {
+		gare.removeVoyageur();
+		
+	}
 }
