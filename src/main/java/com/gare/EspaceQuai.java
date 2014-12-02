@@ -1,3 +1,5 @@
+package com.gare;
+
 import java.util.ArrayList;
 
 
@@ -28,7 +30,6 @@ public class EspaceQuai {
 		}
 		train.logger.info("entré en gare pour " + train.getAttente() + " secondes ...");
 		trains.add(train);
-		gare.getEspaceVente().declarerTrain(train);
 	}
 
 	synchronized public void sortirQuai(Train train){
@@ -59,8 +60,4 @@ public class EspaceQuai {
 		return gare.toString() + "::EspaceQuai";
 	}
 
-	public void removeVoyageur() {
-		gare.removeVoyageur();
-		
-	}
 }

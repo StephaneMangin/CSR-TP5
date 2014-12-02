@@ -1,29 +1,22 @@
-import java.util.ArrayList;
+package com.gare;
 
+import java.util.ArrayList;
 
 
 public class Train extends Thread {
 
-	private Integer id;
 	Log logger;
+	private Trajet trajet;
 	private Integer CAPACITE_TRAIN = 10;
-	private Integer NB_PLACES = (int) (Math.random()*(CAPACITE_TRAIN-0));
+	private Integer NB_PLACES = (int) (Math.random()*(CAPACITE_TRAIN-1));
 	private Integer VITESSE_TRAIN = (int) (Math.random()*(300-50))+50;
 	private Integer ARRET_TRAIN = (int) (Math.random()*(30000-3000))+3000;
 	private ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();
-	EspaceQuai quai;
-	EspaceVente vente;
 
 	
-	public Train(Integer id, Gare gare){
-		this.id = id;
-		quai = gare.getQuai();
-		vente = gare.getEspaceVente();
+	public Train(Trajet trajet){
+		this.trajet = trajet;
 		logger = new Log(this);
-	}
-	
-	public long getId() {
-		return id;
 	}
 	
 	public int getAttente() {
@@ -47,29 +40,43 @@ public class Train extends Thread {
 	}
 	
 	public void run() {
+		logger.config(" initialisé.");
 		try {
 			Thread.sleep(10000/VITESSE_TRAIN);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		quai.entrerQuai(this);
+		trajet.gareDepart().getEspaceQuai().entrerQuai(this);
+		trajet.gareDepart().getEspaceVente().declarerTrain(this);
 		try {
 			Thread.sleep(ARRET_TRAIN);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		vente.retirerTrain(this);
-		quai.sortirQuai(this);
+		trajet.gareDepart().getEspaceVente().retirerTrain(this);
+		trajet.gareDepart().getEspaceQuai().sortirQuai(this);
+		
+		trajet.gareArrivee().getEspaceQuai().entrerQuai(this);
+		viderTrain(trajet.gareArrivee());
+	}
+
+	private void viderTrain(Gare gare) {
+		for (Voyageur voyageur: voyageurs) {
+			gare.addVoyageur(voyageur);
+		}
 	}
 
 	public void faireQueue(Voyageur voyageur) {
 		ajoutVoyageur(voyageur);
-		quai.removeVoyageur();
-		
+		trajet.gareDepart().removeVoyageur(voyageur);
 	}
 	
 	public String toString() {
-		return quai.toString() + "::Train(" + id + ")"; 
+		return trajet.gareDepart().getEspaceQuai().toString() + "::Train(" + getId() + ")"; 
+	}
+
+	public Trajet getTrajet() {
+		return trajet;
 	}
 
 }

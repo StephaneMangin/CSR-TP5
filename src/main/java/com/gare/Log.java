@@ -1,5 +1,6 @@
+package com.gare;
+
 import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;	 
@@ -12,7 +13,6 @@ public class Log {
 	private Object obj;
 	private static Logger log = Logger.getLogger("CSR_TP5");
 	private static ConsoleHandler ch = new ConsoleHandler(); 
-	private static FileHandler fh; 
 	private static Formatter format = new Formatter() {
 
 	    @Override
@@ -28,14 +28,8 @@ public class Log {
 		this.obj = obj;
 		ch.setFormatter(format);
 		log.addHandler(ch);
-		//try {
-		//	fh = new FileHandler("CSR_TP5.log", false);
-		//	fh.setFormatter(format);
-		//	log.addHandler(fh);
-		//} catch (IOException e) {
-		//	e.printStackTrace();
-		//}
-		this.config("log initialized");
+		this.config(" initialized");
+		setLevel(Level.ALL);
 	}
 	
 	public void setLevel(Level level) {
