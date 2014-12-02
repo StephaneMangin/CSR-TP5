@@ -7,8 +7,8 @@ import java.util.Stack;
 public class CentralServer {
 	
 	Log logger;
-	static int nb_train_max = 5;
-	static int nb_voyageur_max = 50;
+	static int nb_train_max = 10;
+	static int nb_voyageur_max = 500;
 	static ArrayList<Gare> gares = new ArrayList<Gare>();
 	static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
 	private static Stack<Billet> billets = new Stack<Billet>();
@@ -121,18 +121,13 @@ public class CentralServer {
 		Thread launch = new TrainLauncher(nb_train_max);
 		launch.start();
 		launch1.start();
+		launch.join();
+		launch1.join();
 		for (Gare gare: gares) {
 			for (Voyageur voyageur: gare.voyageurs) {
 				voyageur.start();
 			}
 		}
-		for (Gare gare: gares) {
-			for (Voyageur voyageur: gare.voyageurs) {
-				voyageur.join();
-			}
-		}
-		launch.join();
-		launch1.join();
 	}
 
 }

@@ -14,10 +14,13 @@ public class VoyageursLauncher extends Thread {
 		for (Gare gare: CentralServer.gares) {
 			for (int i=0; i<nb_voyageur_max;i++) {
 				Trajet trajet = CentralServer.trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
-				gare.entrer(new Voyageur(gare, trajet));
-			}
-			for (Voyageur voyageur: gare.voyageurs) {
+				Voyageur voyageur = new Voyageur(gare, trajet);
 				voyageur.start();
+				try {
+					voyageur.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

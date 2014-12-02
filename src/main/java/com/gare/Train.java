@@ -8,7 +8,7 @@ public class Train extends Thread {
 	Log logger;
 	private Gare  gare;
 	private Trajet trajet;
-	private Integer CAPACITE_TRAIN = 10;
+	private Integer CAPACITE_TRAIN = 100;
 	private Integer NB_PLACES = (int) (Math.random()*(CAPACITE_TRAIN));
 	private Integer VITESSE_TRAIN = (int) (Math.random()*(3000-500))+500;
 	private Integer ARRET_TRAIN = (int) (Math.random()*(60000-3000))+30000;

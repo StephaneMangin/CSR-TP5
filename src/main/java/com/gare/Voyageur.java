@@ -35,11 +35,15 @@ public class Voyageur extends Thread {
 	
 	public void run() {
 		billet = espaceVente.acheterBillet(this);
-		if (billet.getTrajet().gareDepart() != espaceVente.getGare()) {
-			espaceVente.getGare().sortir(this);
-			billet.getTrajet().gareDepart().entrer(this);
+		if (billet != null) {
+			if (billet.getTrajet().gareDepart() != espaceVente.getGare()) {
+				espaceVente.getGare().sortir(this);
+				billet.getTrajet().gareDepart().entrer(this);
+			}
+			billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
+		} else {
+			log.warning("plus de billet pour " + trajet.toString());
 		}
-		billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
 	}
 
 	public String toString() {
