@@ -41,7 +41,9 @@ public class Log {
 		if (log.isLoggable(level)) {
 			try {
 				System.out.println(Date.class.newInstance().toString() + " [" + level.toString() + "] " + obj.toString() + " >>> " + msg);
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
