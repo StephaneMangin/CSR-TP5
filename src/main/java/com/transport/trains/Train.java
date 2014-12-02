@@ -75,25 +75,26 @@ public class Train extends Thread {
 	}
 	
 	public void run() {
-		try {
-			Thread.sleep(10000/VITESSE_TRAIN);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
+		while (true) {
+			try {
+				Thread.sleep(10000/VITESSE_TRAIN);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			gare.getEspaceQuai().entrerQuai(this);
+			viderTrain(gare);
+			gare.getEspaceVente().declarerTrain(this);
+			try {
+				Thread.sleep(ARRET_TRAIN);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			gare.getEspaceVente().retirerTrain(this);
+			gare.getEspaceQuai().sortirQuai(this);
+	
+			assert trajet != null;
+			gare = trajet.gareArrivee();
 		}
-		gare.getEspaceQuai().entrerQuai(this);
-		gare.getEspaceVente().declarerTrain(this);
-		try {
-			Thread.sleep(ARRET_TRAIN);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		gare.getEspaceVente().retirerTrain(this);
-		gare.getEspaceQuai().sortirQuai(this);
-		
-		assert trajet != null;
-		gare = trajet.gareArrivee();
-		gare.getEspaceQuai().entrerQuai(this);
-		viderTrain(trajet.gareArrivee());
-		gare.getEspaceQuai().sortirQuai(this);
+
 	}
 }

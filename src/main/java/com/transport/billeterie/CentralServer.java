@@ -60,8 +60,8 @@ public class CentralServer {
 		return null;
 	}
 
-	synchronized public void retirerTrain(Train train) {
-		retirerBillets(train);
+	synchronized public ArrayList<Billet> retirerTrain(Train train) {
+		return retirerBillets(train);
 	}
 	
 	synchronized public void ajouterBillets(Train train) {
