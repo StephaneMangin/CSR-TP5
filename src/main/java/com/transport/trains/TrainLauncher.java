@@ -1,4 +1,7 @@
-package com.gare;
+package com.transport.trains;
+
+import com.transport.billeterie.CentralServer;
+import com.transport.gare.Gare;
 
 
 public class TrainLauncher extends Thread {
@@ -15,11 +18,6 @@ public class TrainLauncher extends Thread {
 			Gare gare = CentralServer.gares.get((int) (Math.random()*(CentralServer.gares.size()-1)));
 			Train train = new Train(gare);
 			train.start();
-			try {
-				train.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

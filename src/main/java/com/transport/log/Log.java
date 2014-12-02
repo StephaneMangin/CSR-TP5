@@ -1,4 +1,4 @@
-package com.gare;
+package com.transport.log;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
@@ -24,11 +24,12 @@ public class Log {
 	    }
 	};
 
-	protected Log(Object obj) {
+	public Log(Object obj) {
 		this.obj = obj;
 		ch.setFormatter(format);
 		log.addHandler(ch);
-		setLevel(Level.ALL);
+		setLevel(Level.INFO);
+		log.config("init");
 	}
 	
 	public void setLevel(Level level) {
@@ -39,7 +40,7 @@ public class Log {
 		//log.log(level, obj.toString() + " >>> " + msg);
 		if (log.isLoggable(level)) {
 			try {
-				System.out.println(Date.class.newInstance().toString() + " [" + level.toString() + "] " + obj.toString() + " >>> " + msg);
+				System.out.println(Date.class.newInstance().toString() + " [" + level.toString() + "] " + obj.toString() + " " + msg);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

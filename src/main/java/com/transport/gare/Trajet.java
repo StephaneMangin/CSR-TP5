@@ -1,4 +1,6 @@
-package com.gare;
+package com.transport.gare;
+
+import com.transport.log.Log;
 
 
 public class Trajet {
@@ -22,7 +24,7 @@ public class Trajet {
 	}
 	
 	public String toString() {
-		return "Trajet[" + gareDepart.toString() + ">" + gareArrivee.toString() + "]";
+		return "<Trajet " + gareDepart.toString() + " vers " + gareArrivee.toString() + ">";
 	}
 	
 }

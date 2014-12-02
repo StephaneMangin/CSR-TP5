@@ -1,6 +1,10 @@
-package com.gare;
+package com.transport.gare;
 
 import java.util.ArrayList;
+
+import com.transport.billeterie.CentralServer;
+import com.transport.log.Log;
+import com.transport.voyageurs.Voyageur;
 
 
 
@@ -11,7 +15,7 @@ public class Gare {
 	private CentralServer centralServer;
 	private static EspaceQuai quai;
 	private EspaceVente vente;
-	ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();
+	public ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();
 	
 	public Gare(String name, CentralServer centralServer) {
 		this.name = name;
@@ -38,7 +42,7 @@ public class Gare {
 	}
 
 	public String toString() {
-		return "GARE(" + name + ")";
+		return "GARE " + name;
 	}
 
 	synchronized public void sortir(Voyageur voyageur) {

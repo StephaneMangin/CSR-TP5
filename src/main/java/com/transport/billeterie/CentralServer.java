@@ -1,16 +1,23 @@
-package com.gare;
+package com.transport.billeterie;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
+
+import com.transport.gare.Gare;
+import com.transport.gare.Trajet;
+import com.transport.log.Log;
+import com.transport.trains.Train;
+import com.transport.trains.TrainLauncher;
+import com.transport.voyageurs.VoyageursLauncher;
 
 public class CentralServer {
 	
 	Log logger;
 	static int nb_train_max = 10;
 	static int nb_voyageur_max = 500;
-	static ArrayList<Gare> gares = new ArrayList<Gare>();
-	static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
+	public static ArrayList<Gare> gares = new ArrayList<Gare>();
+	public static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
 	private static Stack<Billet> billets = new Stack<Billet>();
 	
 	public CentralServer() throws Exception {
@@ -55,7 +62,6 @@ public class CentralServer {
 
 	synchronized public void retirerTrain(Train train) {
 		retirerBillets(train);
-		notifyAll();
 	}
 	
 	synchronized public void ajouterBillets(Train train) {
@@ -67,7 +73,6 @@ public class CentralServer {
 				billet.setTrain(train);
 				billets.add(billet);
 			}
-			logger.info("billet créé pour le " + train.toString() + " avec le " + trajet.toString());
 		}
 	}
 
@@ -89,7 +94,6 @@ public class CentralServer {
 				billetsSupprimes.add(billet);
 			}
 		}
-		notifyAll();
 		return billetsSupprimes;
 	}
 
@@ -101,10 +105,10 @@ public class CentralServer {
 		return trajets.iterator();
 	}
 	
-	synchronized public int nbBillets(Train train) {
+	synchronized public int nbBillets(Trajet trajet) {
 		int i = 0;
 		for (Billet billet: billets) {
-			if (billet.getTrain() == train) {
+			if (billet.getTrajet() == trajet) {
 				i++;
 			}
 		}
@@ -112,7 +116,7 @@ public class CentralServer {
 	}
 	
 	public String toString() {
-		return "MAIN";
+		return "CentralServer::";
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -122,12 +126,7 @@ public class CentralServer {
 		launch.start();
 		launch1.start();
 		launch.join();
-		launch1.join();
-		for (Gare gare: gares) {
-			for (Voyageur voyageur: gare.voyageurs) {
-				voyageur.start();
-			}
-		}
+		launch1.join();		
 	}
 
 }

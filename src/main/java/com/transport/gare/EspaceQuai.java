@@ -1,6 +1,10 @@
-package com.gare;
+package com.transport.gare;
 
 import java.util.ArrayList;
+
+import com.transport.log.Log;
+import com.transport.trains.Train;
+import com.transport.voyageurs.Voyageur;
 
 
 public class EspaceQuai {
@@ -30,6 +34,7 @@ public class EspaceQuai {
 		}
 		train.logger.info("entré en gare pour " + train.getAttente() + " secondes ...");
 		trains.add(train);
+		notifyAll();
 	}
 
 	synchronized public void sortirQuai(Train train){
@@ -43,7 +48,7 @@ public class EspaceQuai {
 			for (Train train: trains){
 				if (train.getId() == voyageur.getBillet().getTrain().getId()){
 					train.faireQueue(voyageur);
-					train.logger.fine(voyageur.toString() + " est entré.");
+					train.logger.finer(voyageur.toString() + " est entré.");
 					notifyAll();
 					return;
 				}

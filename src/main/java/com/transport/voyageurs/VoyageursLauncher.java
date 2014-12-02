@@ -1,4 +1,8 @@
-package com.gare;
+package com.transport.voyageurs;
+
+import com.transport.billeterie.CentralServer;
+import com.transport.gare.Gare;
+import com.transport.gare.Trajet;
 
 
 public class VoyageursLauncher extends Thread {
@@ -16,11 +20,6 @@ public class VoyageursLauncher extends Thread {
 				Trajet trajet = CentralServer.trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
 				Voyageur voyageur = new Voyageur(gare, trajet);
 				voyageur.start();
-				try {
-					voyageur.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 			}
 		}
 	}

@@ -1,4 +1,7 @@
-package com.gare;
+package com.transport.billeterie;
+
+import com.transport.gare.Trajet;
+import com.transport.trains.Train;
 
 public class Billet {
 
@@ -23,7 +26,7 @@ public class Billet {
 	}
 	
 	public String toString() {
-		return "Billet[" + train.toString() + "][" + trajet.toString() + "]";
+		return "<Billet " + train.toString() + " | " + trajet.toString() + ">";
 	}
 	
 }

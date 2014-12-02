@@ -1,4 +1,10 @@
-package com.gare;
+package com.transport.voyageurs;
+
+import com.transport.billeterie.Billet;
+import com.transport.gare.EspaceVente;
+import com.transport.gare.Gare;
+import com.transport.gare.Trajet;
+import com.transport.log.Log;
 
 
 public class Voyageur extends Thread {
@@ -32,9 +38,13 @@ public class Voyageur extends Thread {
 		log.finest("a son billet pour " + billet.getTrain().getTrajet().toString());
 		this.billet = billet;
 	}
+
+	public String toString() {
+		return "<Voyageur " + getId() + ">"; 
+	}
 	
 	public void run() {
-		billet = espaceVente.acheterBillet(this);
+		billet = espaceVente.faireQueue(this);
 		if (billet != null) {
 			if (billet.getTrajet().gareDepart() != espaceVente.getGare()) {
 				espaceVente.getGare().sortir(this);
@@ -44,9 +54,5 @@ public class Voyageur extends Thread {
 		} else {
 			log.warning("plus de billet pour " + trajet.toString());
 		}
-	}
-
-	public String toString() {
-		return "Voyageur(" + getId() + ")"; 
 	}
 }
