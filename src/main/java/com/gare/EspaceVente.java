@@ -22,18 +22,19 @@ public class EspaceVente  {
 			this.logger = new Log(this);
 		}
 		
-		private Billet faireQueue(Voyageur voyageur) {
-			this.logger.finer(voyageur.toString());
-			return imprimeBillet(gare, gare);
+		synchronized private Billet faireQueue(Voyageur voyageur) {
+			logger.finest(voyageur.toString() + " en attente d'un billet...");
+			return imprimeBillet(voyageur.getTrajet());
 		}
 
-		private Billet imprimeBillet(Gare gareDepart, Gare gareArrivee) {
+		synchronized private Billet imprimeBillet(Trajet trajet) {
+			logger.finest( "impression du billet...");
 			try {
 				Thread.sleep(IMPRESSION_TICKET);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			return gare.getMain().popBillet(gareDepart, gareArrivee);
+			return gare.getCentralServer().retirerBillet(trajet);
 		}
 		
 		public String toString() {
@@ -52,12 +53,11 @@ public class EspaceVente  {
  
 	public void declarerTrain(Train train){
 		train.logger.info("déclare " + train.nbPlaces() + " place(s) disponible(s).");
-		gare.getMain().addBillets(train);
+		gare.getCentralServer().ajouterBillets(train);
 	}
 	
 	synchronized public Billet acheterBillet(Voyageur voyageur){
-		while (gare.getMain().getNbBillets() == 0) {
-			logger.finest(voyageur.toString() + " en attente d'un billet...");
+		while (gare.getCentralServer().nbBillets() == 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -73,7 +73,11 @@ public class EspaceVente  {
 	}
 
 	public void retirerTrain(Train train) {
-		gare.getMain().retirerTrain(train);
+		gare.getCentralServer().retirerTrain(train);
 		
+	}
+
+	public Gare getGare() {
+		return gare;
 	}
 }

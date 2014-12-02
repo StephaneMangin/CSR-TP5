@@ -37,22 +37,43 @@ public class CentralServer {
 		}
 		return null;
 	}
+	
+	public Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
+		for (Trajet trajet: trajets) {
+			if (gareArrivee == null && trajet.gareDepart().getName() == gareDepart.getName()) {
+				return trajet;
+			}
+			else if (gareDepart == null && trajet.gareArrivee().getName() == gareArrivee.getName()) {
+				return trajet;
+			}
+			else if (trajet.gareDepart().getName() == gareDepart.getName() && trajet.gareArrivee().getName() == gareArrivee.getName()) {
+				return trajet;
+			}
+		}
+		return null;
+	}
 
 	synchronized public void retirerTrain(Train train) {
-		removeBillets(train);
+		retirerBillets(train);
 		notifyAll();
 	}
 	
-	synchronized public void addBillets(Train train) {
-		for (int i=0;i<train.nbPlaces();i++) {
-			billets.add(new Billet(train.getTrajet()));
+	synchronized public void ajouterBillets(Train train) {
+		if (train.nbPlaces() != 0) {
+			Trajet trajet = getTrajet(train.getGareActuelle(), null);
+			train.setTrajet(trajet);
+			for (int i=0;i<train.nbPlaces();i++) {
+				Billet billet = new Billet(trajet);
+				billet.setTrain(train);
+				billets.add(billet);
+			}
+			logger.info("billet créé pour le " + train.toString() + " avec le " + trajet.toString());
 		}
-		logger.config("billet créé pour le train " + train.getId());
 	}
 
-	synchronized public Billet popBillet(Gare gareDepart, Gare gareArrivee) {
+	synchronized public Billet retirerBillet(Trajet trajet) {
 		for (Billet billet: billets) {
-			if (billet.getGareDepart() == gareDepart && billet.getGareArrivee() == gareArrivee) {
+			if (billet.getTrajet() == trajet) {
 				billets.remove(billet);
 				return billet;
 			}
@@ -60,16 +81,19 @@ public class CentralServer {
 		return null;
 	}
 
-	synchronized public void removeBillets(Train train) {
+	synchronized public ArrayList<Billet> retirerBillets(Train train) {
+		ArrayList<Billet> billetsSupprimes = new ArrayList<Billet>();
 		for (Billet billet: billets) {
 			if (billet.getTrain() == train) {
 				billets.remove(billet);
+				billetsSupprimes.add(billet);
 			}
 		}
 		notifyAll();
+		return billetsSupprimes;
 	}
 
-	synchronized public int getNbBillets() {
+	synchronized public int nbBillets() {
 		return billets.size();
 	}
 
@@ -77,7 +101,7 @@ public class CentralServer {
 		return trajets.iterator();
 	}
 	
-	synchronized public int getNbBillets(Train train) {
+	synchronized public int nbBillets(Train train) {
 		int i = 0;
 		for (Billet billet: billets) {
 			if (billet.getTrain() == train) {

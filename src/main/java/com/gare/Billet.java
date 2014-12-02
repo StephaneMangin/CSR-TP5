@@ -10,19 +10,20 @@ public class Billet {
 	}
 
 	public void setTrain(Train train) {
+		assert train.getGareActuelle() != trajet.gareDepart();
 		this.train = train;
-		this.trajet = train.getTrajet();
 	}
 	
 	public Train getTrain() {
 		return train;
 	}
 
-	public Gare getGareArrivee() {
-		return trajet.gareArrivee();
+	public Trajet getTrajet() {
+		return trajet;
 	}
 	
-	public Gare getGareDepart() {
-		return trajet.gareDepart();
+	public String toString() {
+		return "Billet[" + train.toString() + "][" + trajet.toString() + "]";
 	}
+	
 }

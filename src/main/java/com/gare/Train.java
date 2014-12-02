@@ -6,16 +6,17 @@ import java.util.ArrayList;
 public class Train extends Thread {
 
 	Log logger;
+	private Gare  gare;
 	private Trajet trajet;
 	private Integer CAPACITE_TRAIN = 10;
-	private Integer NB_PLACES = (int) (Math.random()*(CAPACITE_TRAIN-1));
-	private Integer VITESSE_TRAIN = (int) (Math.random()*(300-50))+50;
-	private Integer ARRET_TRAIN = (int) (Math.random()*(30000-3000))+3000;
+	private Integer NB_PLACES = (int) (Math.random()*(CAPACITE_TRAIN));
+	private Integer VITESSE_TRAIN = (int) (Math.random()*(3000-500))+500;
+	private Integer ARRET_TRAIN = (int) (Math.random()*(60000-3000))+30000;
 	private ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();
 
 	
-	public Train(Trajet trajet){
-		this.trajet = trajet;
+	public Train(Gare gare){
+		this.gare = gare;
 		logger = new Log(this);
 	}
 	
@@ -40,43 +41,55 @@ public class Train extends Thread {
 	}
 	
 	public void run() {
-		logger.config(" initialisé.");
 		try {
 			Thread.sleep(10000/VITESSE_TRAIN);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		trajet.gareDepart().getEspaceQuai().entrerQuai(this);
-		trajet.gareDepart().getEspaceVente().declarerTrain(this);
+		gare.getEspaceQuai().entrerQuai(this);
+		gare.getEspaceVente().declarerTrain(this);
 		try {
 			Thread.sleep(ARRET_TRAIN);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		trajet.gareDepart().getEspaceVente().retirerTrain(this);
-		trajet.gareDepart().getEspaceQuai().sortirQuai(this);
+		gare.getEspaceVente().retirerTrain(this);
+		gare.getEspaceQuai().sortirQuai(this);
 		
-		trajet.gareArrivee().getEspaceQuai().entrerQuai(this);
+		assert trajet != null;
+		gare = trajet.gareArrivee();
+		gare.getEspaceQuai().entrerQuai(this);
 		viderTrain(trajet.gareArrivee());
+		gare.getEspaceQuai().sortirQuai(this);
 	}
 
 	private void viderTrain(Gare gare) {
 		for (Voyageur voyageur: voyageurs) {
-			gare.addVoyageur(voyageur);
+			gare.entrer(voyageur);
 		}
 	}
 
 	public void faireQueue(Voyageur voyageur) {
 		ajoutVoyageur(voyageur);
-		trajet.gareDepart().removeVoyageur(voyageur);
+		trajet.gareDepart().sortir(voyageur);
 	}
 	
 	public String toString() {
-		return trajet.gareDepart().getEspaceQuai().toString() + "::Train(" + getId() + ")"; 
+		return "Train(" + getId() + "|" + gare.toString() + ")"; 
 	}
 
 	public Trajet getTrajet() {
 		return trajet;
+	}
+
+	public void setTrajet(Trajet trajet) {
+		assert trajet.gareDepart() != gare;
+		this.trajet = trajet;
+		
+	}
+
+	public Gare getGareActuelle() {
+		return gare;
 	}
 
 }

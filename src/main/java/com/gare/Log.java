@@ -28,7 +28,6 @@ public class Log {
 		this.obj = obj;
 		ch.setFormatter(format);
 		log.addHandler(ch);
-		this.config(" initialized");
 		setLevel(Level.ALL);
 	}
 	

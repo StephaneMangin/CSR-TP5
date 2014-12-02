@@ -12,7 +12,7 @@ public class TrainLauncher extends Thread {
 	public void run() {
 		for (int i=0; i<nb_train_max;i++) {
 			// Attribution aléatoire des trajets
-			Train train = new Train(CentralServer.trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1))));
+			Train train = new Train(CentralServer.gares.get((int) (Math.random()*(CentralServer.gares.size()-1))));
 			train.start();
 			try {
 				train.join();
