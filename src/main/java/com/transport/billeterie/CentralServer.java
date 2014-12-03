@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
 
+import org.restlet.Application;
+import org.restlet.Component;
+import org.restlet.Context;
+import org.restlet.data.Protocol;
+
 import com.transport.gare.Gare;
 import com.transport.gare.Trajet;
 import com.transport.log.Log;
@@ -18,7 +23,7 @@ public class CentralServer {
 	static int nb_voyageur_max = 500;
 	public static ArrayList<Gare> gares = new ArrayList<Gare>();
 	public static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
-	private static Stack<Billet> billets = new Stack<Billet>();
+	public static Stack<Billet> billets = new Stack<Billet>();
 	
 	public CentralServer() throws Exception {
 		logger = new Log(this);
@@ -36,16 +41,16 @@ public class CentralServer {
 		gares.add(gareC);
 	}
 
-	public Gare getGare(String name) {
+	static public Gare getGare(String name) {
 		for (Gare gare: gares) {
-			if (gare.getName() == name) {
+			if (gare.getName().equals(name)) {
 				return gare;
 			}
 		}
 		return null;
 	}
 	
-	public Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
+	static public Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
 		for (Trajet trajet: trajets) {
 			if (gareArrivee == null && trajet.gareDepart().getName() == gareDepart.getName()) {
 				return trajet;
@@ -101,7 +106,7 @@ public class CentralServer {
 		return billets.size();
 	}
 
-	synchronized public Iterator<Trajet> getTrajets() {
+	static synchronized public Iterator<Trajet> getTrajets() {
 		return trajets.iterator();
 	}
 	
@@ -118,15 +123,26 @@ public class CentralServer {
 	public String toString() {
 		return "CentralServer::";
 	}
-	
+    
 	public static void main(String[] args) throws Exception {
 		new CentralServer();
 		Thread launch1 = new VoyageursLauncher(nb_voyageur_max);
 		Thread launch = new TrainLauncher(nb_train_max);
 		launch.start();
 		launch1.start();
-		launch.join();
-		launch1.join();		
+		
+        // Create a component
+        Component component = new Component();
+        Context context = component.getContext().createChildContext();
+        component.getServers().add(Protocol.HTTP, 8124);
+                
+        // Create an application
+        Application application = new ServerLet(context);
+        component.getDefaultHost().attach(application);
+        
+        // Start the component
+        component.start();
+    	System.out.println("Application initialized...");
 	}
 
 }
