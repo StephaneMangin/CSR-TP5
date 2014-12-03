@@ -20,6 +20,11 @@ public class VoyageursLauncher extends Thread {
 				Trajet trajet = CentralServer.trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
 				Voyageur voyageur = new Voyageur(gare, trajet);
 				voyageur.start();
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
