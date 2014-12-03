@@ -47,7 +47,8 @@ public class TrajetResources extends ServerResource {
         
         Collection<JSONObject> jsonBillets = new ArrayList<JSONObject>();
         
-        for (Billet billet: CentralServer.billets) {
+        Billet billet = CentralServer.getB
+        for () {
             JSONObject current = new JSONObject();
             current.put("billetId", billet.getId());
             current.put("url", "/trajets/" + trajetId + "/" + billet.getId());

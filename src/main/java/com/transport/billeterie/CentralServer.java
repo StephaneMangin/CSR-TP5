@@ -21,9 +21,9 @@ public class CentralServer {
 	Log logger;
 	static int nb_train_max = 10;
 	static int nb_voyageur_max = 500;
-	public static ArrayList<Gare> gares = new ArrayList<Gare>();
-	public static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
-	public static Stack<Billet> billets = new Stack<Billet>();
+	private static ArrayList<Gare> gares = new ArrayList<Gare>();
+	private static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
+	private static Stack<Billet> billets = new Stack<Billet>();
 	
 	public CentralServer() throws Exception {
 		logger = new Log(this);
@@ -50,15 +50,19 @@ public class CentralServer {
 		return null;
 	}
 	
+	static synchronized public Iterator<Billet> getBillets() {
+		return billets.iterator();
+	}
+	
 	static public Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
 		for (Trajet trajet: trajets) {
-			if (gareArrivee == null && trajet.gareDepart().getName() == gareDepart.getName()) {
+			if (gareArrivee == null && trajet.gareDepart() == gareDepart) {
 				return trajet;
 			}
-			else if (gareDepart == null && trajet.gareArrivee().getName() == gareArrivee.getName()) {
+			else if (gareDepart == null && trajet.gareArrivee() == gareArrivee) {
 				return trajet;
 			}
-			else if (trajet.gareDepart().getName() == gareDepart.getName() && trajet.gareArrivee().getName() == gareArrivee.getName()) {
+			else if (trajet.gareDepart() == gareDepart && trajet.gareArrivee() == gareArrivee) {
 				return trajet;
 			}
 		}

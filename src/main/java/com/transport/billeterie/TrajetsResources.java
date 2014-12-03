@@ -24,7 +24,7 @@ public class TrajetsResources extends ServerResource
      * Constructor.
      * Call for every single user request.
      */
-    public TrajetsResources() 
+    public TrajetsResources()
     {
         super();
     }
@@ -41,14 +41,13 @@ public class TrajetsResources extends ServerResource
     {
         Collection<JSONObject> jsonTrajets = new ArrayList<JSONObject>();
         
-        for (Trajet trajet : CentralServer.trajets)
-        {
+        while (CentralServer.getTrajets().hasNext()) {
+            Trajet trajet = CentralServer.getTrajets().next();
             JSONObject current = new JSONObject();
             current.put("gareDepart", trajet.gareDepart().toString());
             current.put("gareArrivee", trajet.gareArrivee().toString());
             current.put("url", "/trajets/" + trajet.gareDepart().getName() + "-" + trajet.gareArrivee().getName());
             jsonTrajets.add(current);
-            
         }
         JSONArray jsonArray = new JSONArray(jsonTrajets);
         return new JsonRepresentation(jsonArray);
