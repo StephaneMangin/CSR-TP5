@@ -1,8 +1,16 @@
 package com.transport.billeterie;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.DelayQueue;
+
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -16,7 +24,7 @@ import com.transport.voyageurs.VoyageursLauncher;
 /**
  * Classe centrale d'initialisation des objets.
  * 
- * Lance les lanceurs de threads et le serveur REST.
+ * Instancie les lanceurs de threads et le serveur REST.
  * 
  * @author blacknight
  *
@@ -26,23 +34,23 @@ public class CentralServer {
 	/**
 	 * Nombre maximum de train à instancier
 	 */
-	private static int nb_train_max = 9;
+	private static int nb_train_max = 10;
 	/**
 	 * Nombre maximum de voyageur à instancier
 	 */
-	private static int nb_voyageur_max = 90;
+	private static int nb_voyageur_max = 60;
 	/**
 	 * Collection des gares disponibles.
 	 */
-	private static List<Gare> gares = new ArrayList<Gare>();
+	private static ArrayList<Gare> gares = new ArrayList<Gare>();
 	/**
 	 * Collection des trajets disponibles.
 	 */
-	private static List<Trajet> trajets = new ArrayList<Trajet>();
+	private static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
 	/**
 	 * Pile des billets disponibles.
 	 */
-	private static List<Billet> billets = new ArrayList<Billet>();
+	private static ArrayList<Billet> billets = new ArrayList<Billet>();
 	
 	public CentralServer() throws Exception {
 		Gare gareA = new Gare("A", this);
@@ -65,7 +73,7 @@ public class CentralServer {
 	 * @param name
 	 * @return
 	 */
-	public static Gare getGare(String name) {
+	public static synchronized Gare getGare(String name) {
 		for (Gare gare: gares) {
 			if (gare.getName().equals(name)) {
 				return gare;
@@ -79,7 +87,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static Iterator<Gare> getGares() {
+	public static synchronized Iterator<Gare> getGares() {
 		return gares.iterator();
 	}
 	
@@ -99,7 +107,7 @@ public class CentralServer {
 	 * @param gareArrivee
 	 * @return
 	 */
-	public static Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
+	public static synchronized Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
 		for (Trajet trajet: trajets) {
 			if (gareArrivee == null && trajet.gareDepart() == gareDepart) {
 				return trajet;
@@ -177,7 +185,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static Iterator<Trajet> getTrajets() {
+	public static synchronized Iterator<Trajet> getTrajets() {
 		return trajets.iterator();
 	}
 
@@ -186,7 +194,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static Gare getRandomGare() {
+	public static synchronized Gare getRandomGare() {
 		return gares.get((int) (Math.random()*(CentralServer.gares.size()-1)));
 	}
 
@@ -195,7 +203,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static Trajet getRandomTrajet() {
+	public static synchronized Trajet getRandomTrajet() {
 		return trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
 	}
 	
@@ -220,12 +228,6 @@ public class CentralServer {
 	}
     
 	public static void main(String[] args) throws Exception {
-		new CentralServer();
-		Thread launch1 = new VoyageursLauncher(nb_voyageur_max);
-		Thread launch = new TrainLauncher(nb_train_max);
-		launch.start();
-		launch1.start();
-		
         // Create a component
         Component component = new Component();
         Context context = component.getContext().createChildContext();
@@ -237,6 +239,14 @@ public class CentralServer {
         
         // Start the component
         component.start();
+        
+		new CentralServer();
+		Thread launch1 = new VoyageursLauncher(nb_voyageur_max);
+		Thread launch = new TrainLauncher(nb_train_max);
+		launch.start();
+		launch1.start();
+		launch.join();
+		launch1.join();
 	}
 
 }

@@ -1,11 +1,9 @@
 package com.transport.billeterie;
 
-import com.transport.log.Log;
 import com.transport.trains.Train;
 
 public class Billet {
 
-	private Log log;
 	private Trajet trajet;
 	private Train train;
 	private static int nb = 0;
@@ -14,7 +12,6 @@ public class Billet {
 	Billet(Trajet trajet) {
 		this.id = Billet.nb++;
 		this.trajet = trajet;
-		log = new Log(this);
 	}
 
 	/**
@@ -32,9 +29,6 @@ public class Billet {
 	 * @param train
 	 */
 	public void setTrain(Train train) {
-		if (train.getTrajet() != trajet) {
-			log.severe(" trajet incorrect !");
-		}
 		this.train = train;
 	}
 	

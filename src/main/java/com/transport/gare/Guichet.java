@@ -38,7 +38,6 @@ class Guichet {
 	 * Accès principal des voyageurs au guichet
 	 */
 	public void faireQueue(Voyageur voyageur) {
-		logger.finest(voyageur.toString() + " en attente d'un billet...");
 		voyageur.setBillet(imprimeBillet(voyageur.getTrajet()));
 	}
 
@@ -49,7 +48,6 @@ class Guichet {
 	 * @return
 	 */
 	private Billet imprimeBillet(Trajet trajet) {
-		logger.finest( "impression du billet...");
 		try {
 			Thread.sleep(IMPRESSION_TICKET);
 		} catch (InterruptedException e) {

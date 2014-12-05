@@ -50,7 +50,6 @@ public class EspaceVente  {
 		train.setTrajet(CentralServer.getTrajet(gare, null));
 		train.logger.info("déclare " + train.nbPlaces() + " place(s) disponible(s).");
 		CentralServer.ajouterBillets(train);
-		logger.info("billet créé pour le " + train.toString() + " avec le " + train.getTrajet().toString());
 		notifyAll();
 	}
 	
