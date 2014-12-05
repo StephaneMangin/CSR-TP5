@@ -1,6 +1,8 @@
 package com.transport.gare;
 
 import com.transport.billeterie.Billet;
+import com.transport.billeterie.CentralServer;
+import com.transport.billeterie.Trajet;
 import com.transport.log.Log;
 import com.transport.voyageurs.Voyageur;
 
@@ -17,21 +19,19 @@ class Guichet {
 		this.logger = new Log(this);
 	}
 	
-	synchronized public Billet faireQueue(Voyageur voyageur) {
+	public void faireQueue(Voyageur voyageur) {
 		logger.finest(voyageur.toString() + " en attente d'un billet...");
-		return imprimeBillet(voyageur.getTrajet());
+		voyageur.setBillet(imprimeBillet(voyageur.getTrajet()));
 	}
 
 	private Billet imprimeBillet(Trajet trajet) {
-		Billet billet = espaceVente.getGare().getCentralServer().retirerBillet(trajet);
 		logger.finest( "impression du billet...");
 		try {
 			Thread.sleep(IMPRESSION_TICKET);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		notifyAll();
-		return billet;
+		return CentralServer.retirerBillet(trajet);
 	}
 	
 	public String toString() {

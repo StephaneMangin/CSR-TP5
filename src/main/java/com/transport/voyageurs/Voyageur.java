@@ -1,9 +1,10 @@
 package com.transport.voyageurs;
 
 import com.transport.billeterie.Billet;
+import com.transport.billeterie.CentralServer;
+import com.transport.billeterie.Trajet;
 import com.transport.gare.EspaceVente;
 import com.transport.gare.Gare;
-import com.transport.gare.Trajet;
 import com.transport.log.Log;
 
 
@@ -12,11 +13,13 @@ public class Voyageur extends Thread {
 	private Log log;
 	private Billet billet;
 	private Trajet trajet;
-	private EspaceVente espaceVente;
 	
 	public Voyageur(Gare gareInit, Trajet trajet){
 		log = new Log(this);
-		this.espaceVente = gareInit.getEspaceVente();
+		setTrajet(trajet);
+	}
+
+	private void setTrajet(Trajet trajet) {
 		this.trajet = trajet;
 	}
 	
@@ -29,10 +32,7 @@ public class Voyageur extends Thread {
 	}
 	
 	public void setBillet(Billet billet) {
-		if (this.billet == null) {
-			log.severe("a déjà un billet");
-		}
-		if (billet.getTrain().getTrajet() == this.trajet) {
+		if (billet.getTrajet() == this.trajet) {
 			log.severe("le trajet du billet n'est pas le bon.");
 		}
 		log.finest("a son billet pour " + billet.getTrain().getTrajet().toString());
@@ -44,15 +44,15 @@ public class Voyageur extends Thread {
 	}
 	
 	public void run() {
-		billet = espaceVente.faireQueue(this);
-		if (billet != null) {
-			if (billet.getTrajet().gareDepart() != espaceVente.getGare()) {
-				espaceVente.getGare().sortir(this);
+		while (true) {
+			trajet.gareDepart().getEspaceVente().faireQueue(this);
+			if (billet != null) {
 				billet.getTrajet().gareDepart().entrer(this);
+				billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
+			} else {
+				log.warning("plus de billet pour " + trajet.toString());
 			}
-			billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
-		} else {
-			log.warning("plus de billet pour " + trajet.toString());
+			setTrajet(CentralServer.getTrajet(billet.getTrajet().gareArrivee(), null));
 		}
 	}
 }

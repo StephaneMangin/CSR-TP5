@@ -2,8 +2,8 @@ package com.transport.trains;
 
 import java.util.ArrayList;
 
+import com.transport.billeterie.Trajet;
 import com.transport.gare.Gare;
-import com.transport.gare.Trajet;
 import com.transport.log.Log;
 import com.transport.voyageurs.Voyageur;
 
@@ -11,8 +11,8 @@ import com.transport.voyageurs.Voyageur;
 public class Train extends Thread {
 
 	public Log logger;
-	private Gare  gare;
 	private Trajet trajet;
+	private Gare gare;
 	private Integer CAPACITE_TRAIN = 150;
 	private Integer NB_PLACES = (int) (Math.random()*(CAPACITE_TRAIN));
 	private Integer VITESSE_TRAIN = (int) (Math.random()*(3000-500))+500;
@@ -20,8 +20,8 @@ public class Train extends Thread {
 	private ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();
 
 	
-	public Train(Gare gare){
-		this.gare = gare;
+	public Train(Trajet trajet){
+		setTrajet(trajet);
 		logger = new Log(this);
 	}
 	
@@ -33,7 +33,7 @@ public class Train extends Thread {
 		return nbVoyageurs() == 0;
 	}
 	
-	public void ajoutVoyageur(Voyageur voyageur){
+	private void ajoutVoyageur(Voyageur voyageur){
 		voyageurs.add(voyageur);
 	}
 	
@@ -51,13 +51,14 @@ public class Train extends Thread {
 		}
 	}
 
-	public void faireQueue(Voyageur voyageur) {
+	public synchronized void faireQueue(Voyageur voyageur) {
 		ajoutVoyageur(voyageur);
+		logger.finer(voyageur.toString() + " est entré.");
 		trajet.gareDepart().sortir(voyageur);
 	}
 	
 	public String toString() {
-		return "<Train " + getId() + " en " + gare.toString() + ">"; 
+		return "<Train " + getId() + ">"; 
 	}
 
 	public Trajet getTrajet() {
@@ -65,13 +66,9 @@ public class Train extends Thread {
 	}
 
 	public void setTrajet(Trajet trajet) {
-		assert trajet.gareDepart() != gare;
 		this.trajet = trajet;
+		this.gare = trajet.gareDepart();
 		
-	}
-
-	public Gare getGareActuelle() {
-		return gare;
 	}
 	
 	public void run() {

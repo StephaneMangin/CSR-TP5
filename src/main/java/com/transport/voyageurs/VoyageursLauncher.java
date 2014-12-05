@@ -1,13 +1,19 @@
 package com.transport.voyageurs;
 
 import com.transport.billeterie.CentralServer;
-import com.transport.gare.Gare;
-import com.transport.gare.Trajet;
 
-
+/**
+ * Classe de lancement des Threads de voyageurs.
+ * 
+ * Associe une gare et un trajet aléatoirement à chaque voyageur.
+ * 
+ * @author blacknight
+ *
+ */
 public class VoyageursLauncher extends Thread {
-
-
+	/**
+	 * Nombre maximum de voyageur à instancier par gare.
+	 */
 	private int nb_voyageur_max;
 
 	public VoyageursLauncher(int nb_voyageur_max) {
@@ -15,18 +21,11 @@ public class VoyageursLauncher extends Thread {
 	}
 	
 	public void run() {
-		for (Gare gare: CentralServer.gares) {
-			for (int i=0; i<nb_voyageur_max;i++) {
-				Trajet trajet = CentralServer.trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
-				Voyageur voyageur = new Voyageur(gare, trajet);
-				voyageur.start();
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+		for (int i=0; i<nb_voyageur_max;i++) {
+			new Voyageur(
+				CentralServer.getRandomGare(),
+				CentralServer.getRandomTrajet()
+			).start();
 		}
 	}
-
 }

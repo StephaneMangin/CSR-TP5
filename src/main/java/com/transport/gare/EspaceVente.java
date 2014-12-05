@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.transport.billeterie.Billet;
+import com.transport.billeterie.CentralServer;
+import com.transport.billeterie.Trajet;
 import com.transport.log.Log;
 import com.transport.trains.Train;
 import com.transport.voyageurs.Voyageur;
@@ -11,7 +13,7 @@ import com.transport.voyageurs.Voyageur;
 
 public class EspaceVente  {
 
-	Log logger;
+	private Log logger;
 	private Gare gare;
 	private int nbGuichets = 3;
 	private List<Guichet> guichets = new ArrayList<Guichet>();
@@ -27,14 +29,15 @@ public class EspaceVente  {
 	}
  
 	synchronized public void declarerTrain(Train train){
+		train.setTrajet(CentralServer.getTrajet(gare, null));
 		train.logger.info("déclare " + train.nbPlaces() + " place(s) disponible(s).");
-		gare.getCentralServer().ajouterBillets(train);
+		CentralServer.ajouterBillets(train);
 		logger.info("billet créé pour le " + train.toString() + " avec le " + train.getTrajet().toString());
 		notifyAll();
 	}
 	
-	synchronized public Billet faireQueue(Voyageur voyageur){
-		while (gare.getCentralServer().nbBillets(voyageur.getTrajet()) == 0) {
+	synchronized public void faireQueue(Voyageur voyageur){
+		while (CentralServer.nbBillets(voyageur.getTrajet()) == 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -42,8 +45,8 @@ public class EspaceVente  {
 			}
 		}
 		Guichet guichet = guichets.get((int) (Math.random()*(nbGuichets-1)));
+		guichet.faireQueue(voyageur);
 		notifyAll();
-		return guichet.faireQueue(voyageur);
 	}
 
 	public Gare getGare() {
@@ -55,7 +58,7 @@ public class EspaceVente  {
 	}
 
 	synchronized public void retirerTrain(Train train) {
-		gare.getCentralServer().retirerTrain(train);
+		CentralServer.retirerBillets(train);
 		notifyAll();
 	}
 }

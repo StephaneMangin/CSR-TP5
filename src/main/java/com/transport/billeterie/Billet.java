@@ -1,13 +1,12 @@
 package com.transport.billeterie;
 
-import com.transport.gare.Trajet;
 import com.transport.trains.Train;
 
 public class Billet {
 
 	private Trajet trajet;
 	private Train train;
-	static int nb = 0;
+	private static int nb = 0;
 	private int id;
 	
 	Billet(Trajet trajet) {
@@ -15,19 +14,39 @@ public class Billet {
 		this.trajet = trajet;
 	}
 
+	/**
+	 * Retourne l'id du billet.
+	 * 
+	 * @return
+	 */
 	public int getId() {
 		return id;
 	}
 	
+	/**
+	 * Défini le train
+	 * 
+	 * @param train
+	 */
 	public void setTrain(Train train) {
-		assert train.getGareActuelle() != trajet.gareDepart();
+		assert train.getTrajet() != trajet;
 		this.train = train;
 	}
 	
+	/**
+	 * Retourne le train associée
+	 * 
+	 * @return
+	 */
 	public Train getTrain() {
 		return train;
 	}
 
+	/**
+	 * Retourne le trajet associé
+	 * 
+	 * @return
+	 */
 	public Trajet getTrajet() {
 		return trajet;
 	}

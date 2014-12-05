@@ -1,8 +1,10 @@
 package com.transport.billeterie;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.Stack;
+import java.util.List;
+import java.util.concurrent.SynchronousQueue;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -10,20 +12,42 @@ import org.restlet.Context;
 import org.restlet.data.Protocol;
 
 import com.transport.gare.Gare;
-import com.transport.gare.Trajet;
 import com.transport.log.Log;
 import com.transport.trains.Train;
 import com.transport.trains.TrainLauncher;
 import com.transport.voyageurs.VoyageursLauncher;
 
+/**
+ * Classe centrale d'initialisation.
+ * 
+ * Lance les lanceurs de threads et le serveur REST.
+ * 
+ * @author blacknight
+ *
+ */
 public class CentralServer {
 	
 	Log logger;
-	static int nb_train_max = 10;
-	static int nb_voyageur_max = 500;
-	private static ArrayList<Gare> gares = new ArrayList<Gare>();
-	private static ArrayList<Trajet> trajets = new ArrayList<Trajet>();
-	private static Stack<Billet> billets = new Stack<Billet>();
+	/**
+	 * Nombre maximum de train à instancier
+	 */
+	static int nb_train_max = 3;
+	/**
+	 * Nombre maximum de voyageur à instancier
+	 */
+	static int nb_voyageur_max = 10;
+	/**
+	 * Collection des gares disponibles.
+	 */
+	private static List<Gare> gares = new ArrayList<Gare>();
+	/**
+	 * Collection des trajets disponibles.
+	 */
+	private static List<Trajet> trajets = new ArrayList<Trajet>();
+	/**
+	 * Pile des billets disponibles.
+	 */
+	private static List<Billet> billets = new ArrayList<Billet>();
 	
 	public CentralServer() throws Exception {
 		logger = new Log(this);
@@ -41,7 +65,13 @@ public class CentralServer {
 		gares.add(gareC);
 	}
 
-	static public Gare getGare(String name) {
+	/**
+	 * Retourne la gare associée
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static Gare getGare(String name) {
 		for (Gare gare: gares) {
 			if (gare.getName().equals(name)) {
 				return gare;
@@ -49,12 +79,33 @@ public class CentralServer {
 		}
 		return null;
 	}
+
+	/**
+	 * Retourne un itérateur sur la collection des gares
+	 * 
+	 * @return
+	 */
+	public static Iterator<Gare> getGares() {
+		return gares.iterator();
+	}
 	
-	static synchronized public Iterator<Billet> getBillets() {
+	/**
+	 * Retourne un itérateur sur la pile des billets
+	 * 
+	 * @return
+	 */
+	public static Iterator<Billet> getBillets() {
 		return billets.iterator();
 	}
 	
-	static public Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
+	/**
+	 * Retourne le trajet associé
+	 * 
+	 * @param gareDepart
+	 * @param gareArrivee
+	 * @return
+	 */
+	public static Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
 		for (Trajet trajet: trajets) {
 			if (gareArrivee == null && trajet.gareDepart() == gareDepart) {
 				return trajet;
@@ -68,24 +119,29 @@ public class CentralServer {
 		}
 		return null;
 	}
-
-	synchronized public ArrayList<Billet> retirerTrain(Train train) {
-		return retirerBillets(train);
-	}
 	
-	synchronized public void ajouterBillets(Train train) {
+	/**
+	 * Créé les billets pour le train fourni en paramètre
+	 * 
+	 * @param train
+	 */
+	public static synchronized void ajouterBillets(Train train) {
 		if (train.nbPlaces() != 0) {
-			Trajet trajet = getTrajet(train.getGareActuelle(), null);
-			train.setTrajet(trajet);
 			for (int i=0;i<train.nbPlaces();i++) {
-				Billet billet = new Billet(trajet);
+				Billet billet = new Billet(train.getTrajet());
 				billet.setTrain(train);
 				billets.add(billet);
 			}
 		}
 	}
 
-	synchronized public Billet retirerBillet(Trajet trajet) {
+	/**
+	 * Retourne le billet pour ce trajet après suppression de la liste des billets
+	 * 
+	 * @param trajet
+	 * @return
+	 */
+	public static synchronized Billet retirerBillet(Trajet trajet) {
 		for (Billet billet: billets) {
 			if (billet.getTrajet() == trajet) {
 				billets.remove(billet);
@@ -94,10 +150,17 @@ public class CentralServer {
 		}
 		return null;
 	}
-
-	synchronized public ArrayList<Billet> retirerBillets(Train train) {
+	/**
+	 * Retourne la liste de tous les billets pour ce train
+	 * après leur retrait de la liste des billets.
+	 * 
+	 * @param train
+	 * @return
+	 */
+	public static synchronized ArrayList<Billet> retirerBillets(Train train) {
 		ArrayList<Billet> billetsSupprimes = new ArrayList<Billet>();
-		for (Billet billet: billets) {
+		while (getBillets().hasNext()) {
+			Billet billet = getBillets().next();
 			if (billet.getTrain() == train) {
 				billets.remove(billet);
 				billetsSupprimes.add(billet);
@@ -106,15 +169,49 @@ public class CentralServer {
 		return billetsSupprimes;
 	}
 
-	synchronized public int nbBillets() {
+	/**
+	 * Retourne le nombre total de billets.
+	 * 
+	 * @return
+	 */
+	public static synchronized int nbBillets() {
 		return billets.size();
 	}
 
-	static synchronized public Iterator<Trajet> getTrajets() {
+	/**
+	 * Retourne un itérateur sur la collection des trajets
+	 * 
+	 * @return
+	 */
+	public static synchronized Iterator<Trajet> getTrajets() {
 		return trajets.iterator();
 	}
+
+	/**
+	 * Retourne une gare au hasard
+	 * 
+	 * @return
+	 */
+	public static synchronized Gare getRandomGare() {
+		return gares.get((int) (Math.random()*(CentralServer.gares.size()-1)));
+	}
+
+	/**
+	 * Retourne un trajet au hasard
+	 * 
+	 * @return
+	 */
+	public static synchronized Trajet getRandomTrajet() {
+		return trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
+	}
 	
-	synchronized public int nbBillets(Trajet trajet) {
+	/**
+	 * Retourne le nombre de billets restants pour ce trajet
+	 * 
+	 * @param trajet
+	 * @return
+	 */
+	public static synchronized int nbBillets(Trajet trajet) {
 		int i = 0;
 		for (Billet billet: billets) {
 			if (billet.getTrajet() == trajet) {
@@ -141,12 +238,11 @@ public class CentralServer {
         component.getServers().add(Protocol.HTTP, 8124);
                 
         // Create an application
-        Application application = new ServerLet(context);
+        Application application = new CentralApplication(context);
         component.getDefaultHost().attach(application);
         
         // Start the component
         component.start();
-    	System.out.println("Application initialized...");
 	}
 
 }

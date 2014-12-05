@@ -11,29 +11,27 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
-import com.transport.gare.Trajet;
-
 /**
- * Resource exposant les utilisateurs.
+ * Resource exposant les trajets.
  * @author msimonin
  *
  */
-public class TrajetsResources extends ServerResource 
+public class TrajetsResource extends ServerResource 
 {
     /**
      * Constructor.
      * Call for every single user request.
      */
-    public TrajetsResources()
+    public TrajetsResource()
     {
         super();
     }
 
     /**
      * 
-     * Retourne la liste de tous les utilisateurs crée.
+     * Retourne la liste de tous les trajets.
      *
-     * @return  la representation JSON de tous les utilisateurs.
+     * @return  la representation JSON de tous les trajets.
      * @throws JSONException
      */
     @Get("json")
@@ -44,8 +42,7 @@ public class TrajetsResources extends ServerResource
         while (CentralServer.getTrajets().hasNext()) {
             Trajet trajet = CentralServer.getTrajets().next();
             JSONObject current = new JSONObject();
-            current.put("gareDepart", trajet.gareDepart().toString());
-            current.put("gareArrivee", trajet.gareArrivee().toString());
+            current.put("trajetId", trajet.gareDepart().getName() + "-" + trajet.gareArrivee().getName());
             current.put("url", "/trajets/" + trajet.gareDepart().getName() + "-" + trajet.gareArrivee().getName());
             jsonTrajets.add(current);
         }
