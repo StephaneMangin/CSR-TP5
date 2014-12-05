@@ -1,24 +1,20 @@
 package com.transport.billeterie;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.SynchronousQueue;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
 
 import com.transport.gare.Gare;
-import com.transport.log.Log;
 import com.transport.trains.Train;
 import com.transport.trains.TrainLauncher;
 import com.transport.voyageurs.VoyageursLauncher;
 
 /**
- * Classe centrale d'initialisation.
+ * Classe centrale d'initialisation des objets.
  * 
  * Lance les lanceurs de threads et le serveur REST.
  * 
@@ -27,15 +23,14 @@ import com.transport.voyageurs.VoyageursLauncher;
  */
 public class CentralServer {
 	
-	Log logger;
 	/**
 	 * Nombre maximum de train à instancier
 	 */
-	static int nb_train_max = 3;
+	private static int nb_train_max = 9;
 	/**
 	 * Nombre maximum de voyageur à instancier
 	 */
-	static int nb_voyageur_max = 10;
+	private static int nb_voyageur_max = 90;
 	/**
 	 * Collection des gares disponibles.
 	 */
@@ -50,7 +45,6 @@ public class CentralServer {
 	private static List<Billet> billets = new ArrayList<Billet>();
 	
 	public CentralServer() throws Exception {
-		logger = new Log(this);
 		Gare gareA = new Gare("A", this);
 		Gare gareB = new Gare("B", this);
 		Gare gareC = new Gare("C", this);
@@ -94,7 +88,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static Iterator<Billet> getBillets() {
+	public static synchronized Iterator<Billet> getBillets() {
 		return billets.iterator();
 	}
 	
@@ -150,6 +144,7 @@ public class CentralServer {
 		}
 		return null;
 	}
+	
 	/**
 	 * Retourne la liste de tous les billets pour ce train
 	 * après leur retrait de la liste des billets.
@@ -159,8 +154,7 @@ public class CentralServer {
 	 */
 	public static synchronized ArrayList<Billet> retirerBillets(Train train) {
 		ArrayList<Billet> billetsSupprimes = new ArrayList<Billet>();
-		while (getBillets().hasNext()) {
-			Billet billet = getBillets().next();
+		for (Billet billet: billets) {
 			if (billet.getTrain() == train) {
 				billets.remove(billet);
 				billetsSupprimes.add(billet);
@@ -183,7 +177,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Iterator<Trajet> getTrajets() {
+	public static Iterator<Trajet> getTrajets() {
 		return trajets.iterator();
 	}
 
@@ -192,7 +186,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Gare getRandomGare() {
+	public static Gare getRandomGare() {
 		return gares.get((int) (Math.random()*(CentralServer.gares.size()-1)));
 	}
 
@@ -201,7 +195,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Trajet getRandomTrajet() {
+	public static Trajet getRandomTrajet() {
 		return trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
 	}
 	

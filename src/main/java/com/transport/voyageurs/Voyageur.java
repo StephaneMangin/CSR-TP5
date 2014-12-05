@@ -11,11 +11,13 @@ import com.transport.log.Log;
 public class Voyageur extends Thread {
 
 	private Log log;
+	private Gare gareInit;
 	private Billet billet;
 	private Trajet trajet;
 	
 	public Voyageur(Gare gareInit, Trajet trajet){
 		log = new Log(this);
+		this.gareInit = gareInit;
 		setTrajet(trajet);
 	}
 
@@ -32,27 +34,21 @@ public class Voyageur extends Thread {
 	}
 	
 	public void setBillet(Billet billet) {
-		if (billet.getTrajet() == this.trajet) {
-			log.severe("le trajet du billet n'est pas le bon.");
-		}
 		log.finest("a son billet pour " + billet.getTrain().getTrajet().toString());
 		this.billet = billet;
 	}
 
 	public String toString() {
-		return "<Voyageur " + getId() + ">"; 
+		return "<Voyageur " + getId() + ">";
 	}
 	
 	public void run() {
 		while (true) {
-			trajet.gareDepart().getEspaceVente().faireQueue(this);
-			if (billet != null) {
-				billet.getTrajet().gareDepart().entrer(this);
-				billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
-			} else {
-				log.warning("plus de billet pour " + trajet.toString());
-			}
+			gareInit.getEspaceVente().faireQueue(this);
+			billet.getTrajet().gareDepart().entrer(this);
+			billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
 			setTrajet(CentralServer.getTrajet(billet.getTrajet().gareArrivee(), null));
+			gareInit = billet.getTrajet().gareDepart();
 		}
 	}
 }

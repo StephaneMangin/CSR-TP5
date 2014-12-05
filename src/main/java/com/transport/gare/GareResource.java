@@ -32,7 +32,7 @@ public class GareResource extends ServerResource {
     public Representation getGare() throws JSONException
     {
         JSONObject current = new JSONObject();
-        current.put("trajetId", gare.getName());
+        current.put("gareId", gare.getName());
         current.put("voyageurs_nb", gare.getNbVoyageurs());
         current.put("url", "/gares/" + gare.getName());
         return new JsonRepresentation(current);

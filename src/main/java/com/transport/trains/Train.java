@@ -51,7 +51,7 @@ public class Train extends Thread {
 		}
 	}
 
-	public synchronized void faireQueue(Voyageur voyageur) {
+	public synchronized void entrer(Voyageur voyageur) {
 		ajoutVoyageur(voyageur);
 		logger.finer(voyageur.toString() + " est entré.");
 		trajet.gareDepart().sortir(voyageur);

@@ -67,7 +67,7 @@ public class EspaceQuai {
 		while (true) {
 			for (Train train: trains){
 				if (train.getId() == voyageur.getBillet().getTrain().getId()){
-					train.faireQueue(voyageur);
+					train.entrer(voyageur);
 					notifyAll();
 					return;
 				}

@@ -10,7 +10,7 @@ import com.transport.voyageurs.Voyageur;
 
 
 /**
- * Class de modélisation d'une gare
+ * Classe de modélisation d'une gare
  * 
  * @author blacknight
  *
