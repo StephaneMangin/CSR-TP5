@@ -8,8 +8,8 @@ public class Gare {
 	Log logger;
 	private static EspaceQuai quai;
 	private EspaceVente vente;
-	private int nb_voyageur_max = 50;
-	private int nb_train_max = 5;
+	private int nb_voyageur_max = 15;
+	private int nb_train_max = 3;
 	private int voyageurs_restants = nb_voyageur_max;
 	private ArrayList<Train> trains = new ArrayList<Train>();
 	private ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();

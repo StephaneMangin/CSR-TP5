@@ -45,14 +45,13 @@ public class EspaceVente {
 		for (int i=0;i< train.nbPlaces();i++) {
 			Billet billet = new Billet(train);
 			billets.add(billet);
-			logger.config("billet créé pour le train " + billet.getTrain().getId());
 			notifyAll();
 		}
+		logger.config(train.nbPlaces() + "billet créé pour le train " + train.getId());
 	}
 	
 	synchronized public void faireQueue(Voyageur voyageur){
 		while (billets.isEmpty()) {
-			logger.finest(voyageur.toString() + " en attente d'un billet...");
 			try {
 				wait();
 			} catch (InterruptedException e) {

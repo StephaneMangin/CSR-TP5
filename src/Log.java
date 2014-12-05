@@ -12,7 +12,6 @@ public class Log {
 	private Object obj;
 	private static Logger log = Logger.getLogger("CSR_TP5");
 	private static ConsoleHandler ch = new ConsoleHandler(); 
-	private static FileHandler fh; 
 	private static Formatter format = new Formatter() {
 
 	    @Override
@@ -28,14 +27,7 @@ public class Log {
 		this.obj = obj;
 		ch.setFormatter(format);
 		log.addHandler(ch);
-		//try {
-		//	fh = new FileHandler("CSR_TP5.log", false);
-		//	fh.setFormatter(format);
-		//	log.addHandler(fh);
-		//} catch (IOException e) {
-		//	e.printStackTrace();
-		//}
-		this.config("log initialized");
+		setLevel(Level.ALL);
 	}
 	
 	public void setLevel(Level level) {
