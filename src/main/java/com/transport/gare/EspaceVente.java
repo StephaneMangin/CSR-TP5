@@ -39,7 +39,11 @@ public class EspaceVente  {
 			guichets.add(new Guichet(i, this));
 		}
 	}
- 
+
+	public Gare getGare() {
+		return gare;
+	}
+	
 	/**
 	 * Déclare un train comme disponible et créer autant de billets correspondant
 	 * à son nombre de place disponible
@@ -47,9 +51,10 @@ public class EspaceVente  {
 	 * @param train
 	 */
 	synchronized public void declarerTrain(Train train){
+		gare.getCentralServer();
 		train.setTrajet(CentralServer.getTrajet(gare, null));
 		train.logger.info("déclare " + train.nbPlaces() + " place(s) disponible(s).");
-		CentralServer.ajouterBillets(train);
+		gare.getCentralServer().ajouterBillets(train);
 		notifyAll();
 	}
 	
@@ -60,7 +65,7 @@ public class EspaceVente  {
 	 * @param voyageur
 	 */
 	synchronized public void faireQueue(Voyageur voyageur){
-		while (CentralServer.nbBillets(voyageur.getTrajet()) == 0) {
+		while (gare.getCentralServer().nbBillets(voyageur.getTrajet()) == 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -78,7 +83,7 @@ public class EspaceVente  {
 	 * @param train
 	 */
 	synchronized public void retirerTrain(Train train) {
-		CentralServer.retirerBillets(train);
+		gare.getCentralServer().retirerBillets(train);
 		notifyAll();
 	}
 	

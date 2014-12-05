@@ -47,7 +47,7 @@ public class Voyageur extends Thread {
 			gareInit.getEspaceVente().faireQueue(this);
 			billet.getTrajet().gareDepart().entrer(this);
 			billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
-			setTrajet(CentralServer.getTrajet(billet.getTrajet().gareArrivee(), null));
+			setTrajet(gareInit.getCentralServer().getTrajet(billet.getTrajet().gareArrivee(), null));
 			gareInit = billet.getTrajet().gareDepart();
 		}
 	}

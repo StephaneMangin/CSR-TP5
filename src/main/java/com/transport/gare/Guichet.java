@@ -53,7 +53,7 @@ class Guichet {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return CentralServer.retirerBillet(trajet);
+		return espaceVente.getGare().getCentralServer().retirerBillet(trajet);
 	}
 	
 	public String toString() {

@@ -34,11 +34,11 @@ public class CentralServer {
 	/**
 	 * Nombre maximum de train à instancier
 	 */
-	private static int nb_train_max = 10;
+	private static int nb_train_max = 80;
 	/**
 	 * Nombre maximum de voyageur à instancier
 	 */
-	private static int nb_voyageur_max = 60;
+	private static int nb_voyageur_max = 300;
 	/**
 	 * Collection des gares disponibles.
 	 */
@@ -50,7 +50,7 @@ public class CentralServer {
 	/**
 	 * Pile des billets disponibles.
 	 */
-	private static ArrayList<Billet> billets = new ArrayList<Billet>();
+	private ArrayList<Billet> billets = new ArrayList<Billet>();
 	
 	public CentralServer() throws Exception {
 		Gare gareA = new Gare("A", this);
@@ -73,7 +73,7 @@ public class CentralServer {
 	 * @param name
 	 * @return
 	 */
-	public static synchronized Gare getGare(String name) {
+	public synchronized static Gare getGare(String name) {
 		for (Gare gare: gares) {
 			if (gare.getName().equals(name)) {
 				return gare;
@@ -87,7 +87,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Iterator<Gare> getGares() {
+	public synchronized static Iterator<Gare> getGares() {
 		return gares.iterator();
 	}
 	
@@ -96,7 +96,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Iterator<Billet> getBillets() {
+	public synchronized Iterator<Billet> getBillets() {
 		return billets.iterator();
 	}
 	
@@ -107,7 +107,7 @@ public class CentralServer {
 	 * @param gareArrivee
 	 * @return
 	 */
-	public static synchronized Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
+	public synchronized static Trajet getTrajet(Gare gareDepart, Gare gareArrivee) {
 		for (Trajet trajet: trajets) {
 			if (gareArrivee == null && trajet.gareDepart() == gareDepart) {
 				return trajet;
@@ -127,7 +127,7 @@ public class CentralServer {
 	 * 
 	 * @param train
 	 */
-	public static synchronized void ajouterBillets(Train train) {
+	public synchronized void ajouterBillets(Train train) {
 		if (train.nbPlaces() != 0) {
 			for (int i=0;i<train.nbPlaces();i++) {
 				Billet billet = new Billet(train.getTrajet());
@@ -143,7 +143,7 @@ public class CentralServer {
 	 * @param trajet
 	 * @return
 	 */
-	public static synchronized Billet retirerBillet(Trajet trajet) {
+	public synchronized Billet retirerBillet(Trajet trajet) {
 		for (Billet billet: billets) {
 			if (billet.getTrajet() == trajet) {
 				billets.remove(billet);
@@ -160,7 +160,7 @@ public class CentralServer {
 	 * @param train
 	 * @return
 	 */
-	public static synchronized ArrayList<Billet> retirerBillets(Train train) {
+	public synchronized ArrayList<Billet> retirerBillets(Train train) {
 		ArrayList<Billet> billetsSupprimes = new ArrayList<Billet>();
 		for (Billet billet: billets) {
 			if (billet.getTrain() == train) {
@@ -176,7 +176,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized int nbBillets() {
+	public synchronized int nbBillets() {
 		return billets.size();
 	}
 
@@ -185,7 +185,7 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Iterator<Trajet> getTrajets() {
+	public synchronized static Iterator<Trajet> getTrajets() {
 		return trajets.iterator();
 	}
 
@@ -194,8 +194,8 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Gare getRandomGare() {
-		return gares.get((int) (Math.random()*(CentralServer.gares.size()-1)));
+	public synchronized static Gare getRandomGare() {
+		return gares.get((int) (Math.random()*(gares.size()-1)));
 	}
 
 	/**
@@ -203,8 +203,8 @@ public class CentralServer {
 	 * 
 	 * @return
 	 */
-	public static synchronized Trajet getRandomTrajet() {
-		return trajets.get((int) (Math.random()*(CentralServer.trajets.size()-1)));
+	public synchronized static Trajet getRandomTrajet() {
+		return trajets.get((int) (Math.random()*(trajets.size()-1)));
 	}
 	
 	/**
@@ -213,7 +213,7 @@ public class CentralServer {
 	 * @param trajet
 	 * @return
 	 */
-	public static synchronized int nbBillets(Trajet trajet) {
+	public synchronized int nbBillets(Trajet trajet) {
 		int i = 0;
 		for (Billet billet: billets) {
 			if (billet.getTrajet() == trajet) {

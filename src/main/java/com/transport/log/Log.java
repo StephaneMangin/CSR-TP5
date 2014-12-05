@@ -12,7 +12,7 @@ public class Log {
 
 	private Object obj;
 	private static Logger log = Logger.getLogger("CSR_TP5");
-	private static ConsoleHandler ch = new ConsoleHandler(); 
+	private static ConsoleHandler ch = new ConsoleHandler();
 	private static Formatter format = new Formatter() {
 
 	    @Override
@@ -28,7 +28,7 @@ public class Log {
 		this.obj = obj;
 		ch.setFormatter(format);
 		log.addHandler(ch);
-		setLevel(Level.INFO);
+		setLevel(Level.ALL);
 		log.config("init");
 	}
 	
@@ -48,7 +48,7 @@ public class Log {
 			}
 		}
 	}
-	
+
 	public void severe(String msg) {
 		log(Level.SEVERE, msg);
 	}
