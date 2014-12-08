@@ -20,8 +20,8 @@ public class Train extends Thread {
 	private ArrayList<Voyageur> voyageurs = new ArrayList<Voyageur>();
 
 	
-	public Train(Trajet trajet){
-		setTrajet(trajet);
+	public Train(Gare gare){
+		this.gare = gare;
 		logger = new Log(this);
 	}
 	
@@ -68,7 +68,7 @@ public class Train extends Thread {
 	public void setTrajet(Trajet trajet) {
 		this.trajet = trajet;
 		this.gare = trajet.gareDepart();
-		
+		logger.info("attribution du " + trajet.toString());
 	}
 	
 	public void run() {
@@ -79,6 +79,7 @@ public class Train extends Thread {
 				e1.printStackTrace();
 			}
 			gare.getEspaceQuai().entrerQuai(this);
+			logger.info("entré en gare " + gare.toString() + " pour " + getAttente() + " secondes ...");
 			viderTrain(gare);
 			gare.getEspaceVente().declarerTrain(this);
 			try {
@@ -88,6 +89,7 @@ public class Train extends Thread {
 			}
 			gare.getEspaceVente().retirerTrain(this);
 			gare.getEspaceQuai().sortirQuai(this);
+			logger.info(" quitte la gare avec " + nbVoyageurs() + " voyageur(s).");
 	
 			assert trajet != null;
 			gare = trajet.gareArrivee();

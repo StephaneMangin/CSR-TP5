@@ -2,21 +2,18 @@ package com.transport.gare;
 
 import java.util.ArrayList;
 
-import com.transport.log.Log;
 import com.transport.trains.Train;
 import com.transport.voyageurs.Voyageur;
 
 
 public class EspaceQuai {
 
-	private Log logger;
 	private Gare gare;
 	private static Integer NB_VOIES = 3;
 	private ArrayList<Train> trains = new ArrayList<Train>();
 	
 	public EspaceQuai(Gare gare) {
 		this.gare = gare;
-		logger = new Log(this);
 	}
 	
 	/**
@@ -42,7 +39,6 @@ public class EspaceQuai {
 				e.printStackTrace();
 			}
 		}
-		logger.info(train.toString() + " entré en gare pour " + train.getAttente() + " secondes ...");
 		trains.add(train);
 		notifyAll();
 	}
@@ -53,7 +49,6 @@ public class EspaceQuai {
 	 * @param train
 	 */
 	synchronized public void sortirQuai(Train train){
-		logger.info(train.toString() + " quitte la gare avec " + train.nbVoyageurs() + " voyageur(s).");
 		trains.remove(train);
 		notifyAll();
 	}

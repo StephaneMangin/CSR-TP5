@@ -34,11 +34,11 @@ public class CentralServer {
 	/**
 	 * Nombre maximum de train à instancier
 	 */
-	private static int nb_train_max = 80;
+	private static int nb_train_max = 10;
 	/**
 	 * Nombre maximum de voyageur à instancier
 	 */
-	private static int nb_voyageur_max = 300;
+	private static int nb_voyageur_max = 50;
 	/**
 	 * Collection des gares disponibles.
 	 */

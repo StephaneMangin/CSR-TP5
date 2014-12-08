@@ -23,7 +23,7 @@ public class TrainLauncher extends Thread {
 	
 	public void run() {
 		for (int i=0; i<nb_train_max;i++) {
-			new Train(CentralServer.getRandomTrajet()).start();
+			new Train(CentralServer.getRandomGare()).start();
 		}
 	}
 

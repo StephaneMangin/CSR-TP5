@@ -11,9 +11,9 @@ import java.util.logging.LogRecord;
 public class Log {
 
 	private Object obj;
-	private static Logger log = Logger.getLogger("CSR_TP5");
-	private static ConsoleHandler ch = new ConsoleHandler();
-	private static Formatter format = new Formatter() {
+	private Logger log = Logger.getLogger("CSR_TP5");
+	private ConsoleHandler ch = new ConsoleHandler();
+	private Formatter format = new Formatter() {
 
 	    @Override
 	    public String format(LogRecord record) {
@@ -28,8 +28,7 @@ public class Log {
 		this.obj = obj;
 		ch.setFormatter(format);
 		log.addHandler(ch);
-		setLevel(Level.ALL);
-		log.config("init");
+		setLevel(Level.INFO);
 	}
 	
 	public void setLevel(Level level) {

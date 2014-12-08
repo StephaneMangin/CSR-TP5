@@ -10,18 +10,19 @@ import com.transport.log.Log;
 
 public class Voyageur extends Thread {
 
-	private Log log;
+	private Log logger;
 	private Gare gareInit;
 	private Billet billet;
 	private Trajet trajet;
 	
 	public Voyageur(Gare gareInit, Trajet trajet){
-		log = new Log(this);
+		logger = new Log(this);
 		this.gareInit = gareInit;
 		setTrajet(trajet);
 	}
 
 	private void setTrajet(Trajet trajet) {
+		logger.info("attribution du " + trajet.toString());
 		this.trajet = trajet;
 	}
 	
@@ -34,7 +35,7 @@ public class Voyageur extends Thread {
 	}
 	
 	public void setBillet(Billet billet) {
-		log.finest("a son billet pour " + billet.getTrain().getTrajet().toString());
+		logger.fine("a son billet pour " + billet.getTrain().toString());
 		this.billet = billet;
 	}
 
@@ -47,7 +48,7 @@ public class Voyageur extends Thread {
 			gareInit.getEspaceVente().faireQueue(this);
 			billet.getTrajet().gareDepart().entrer(this);
 			billet.getTrajet().gareDepart().getEspaceQuai().faireQueue(this);
-			setTrajet(gareInit.getCentralServer().getTrajet(billet.getTrajet().gareArrivee(), null));
+			setTrajet(CentralServer.getTrajet(billet.getTrajet().gareArrivee(), null));
 			gareInit = billet.getTrajet().gareDepart();
 		}
 	}
